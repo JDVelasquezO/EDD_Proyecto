@@ -4,12 +4,17 @@ class TablaHash:
     def __init__(self, size, db, name, nCols):
         self.Size = size-1
         self.values = list()
+        self.headers = list()
         self.db = db
         self.name = name
         self.nCols = nCols
-
+        self.genericId = 1
+        self.sign = True
         for i in range (0, size):
             self.values.append(None)
+
+    def setHeader(self, header):
+        self.headers.append(header)
 
     def getSize(self):
         return self.Size
@@ -40,29 +45,47 @@ class TablaHash:
         return contadorAux
 
     def insertarDato(self, dato):
-        posicion_hash = self.funcionHash(dato)
-        posicion_hash =int( posicion_hash)
-        bandera = self.verificarDato(dato)
-        if self.values[posicion_hash] is not None:
-            if bandera:
-                nuevo_dato = self.values[posicion_hash]
+        if len(dato) == self.nCols:
+            if len(self.headers) == 0:
+                self.setHeader(dato)
+                return
+            posicion_hash = int(self.funcionHash(dato))
+            bandera = self.verificarDato(dato, posicion_hash)
+            if self.values[posicion_hash] is not None:
+                if bandera:
+                    nuevo_dato = self.values[posicion_hash]
+                    nuevo_dato.insert(dato)
+            else:
+                nuevo_dato = Node()
+                nuevo_dato.post_in_hash = posicion_hash
                 nuevo_dato.insert(dato)
-        else:
-            nuevo_dato = Node()
-            nuevo_dato.post_in_hash = posicion_hash
-            # tupla = (dato, tupla)
-            nuevo_dato.insert(dato)
-            self.values[posicion_hash] = nuevo_dato
-            # print("dato agregado con exito")
+                self.values[posicion_hash] = nuevo_dato
+        elif len(dato) < self.nCols:
+            node = self.values[self.genericId]
+            if node is None:
+                dato[0:0] = [self.genericId]
+                self.insertarDato(dato)
+            else:
+                self.genericId += 1
+                self.insertarDato(dato)
+        elif len(dato) == (self.nCols + 1):
+            if self.sign:
+                key1 = int(dato[0])
+                key2 = int(dato[1])
+                newKey = int(key1) + int(key2)
+                if self.buscar(newKey) == "El dato no existe":
+                    dato[0:0] = [newKey]
+                    self.insertarDato(dato)
+            else:
+                newKey += 1
+                self.sign = False
+                self.insertarDato(dato)
 
-    def verificarDato(self, dato):
+    def verificarDato(self, dato, position):
         aux_bol = False
-        posicion_hash = self.funcionHash(dato)
-        posicion_hash = int(posicion_hash)
-        if self.values[posicion_hash] is not None:
-            if self.values[posicion_hash].buscarDato(dato):
+        if self.values[position] is not None:
+            if not self.values[position].buscarDato_binary(dato):
                 aux_bol = True
-                return aux_bol
         return aux_bol
 
     def eliminarDato(self, dato):
@@ -78,6 +101,7 @@ class TablaHash:
 
     def printTbl(self):
         contador = 0
+        print(f"i | {self.headers}")
         for i in range(0,self.Size+1):
             if self.values[i] != None:
                 print(str(self.values[i].post_in_hash) + " | " + str(self.values[i].array))
@@ -86,4 +110,7 @@ class TablaHash:
     def buscar(self, dato):
         posicion_hash = self.funcionHash(dato)
         nodo = self.values[posicion_hash]
-        return nodo.buscarDato(dato)
+        if nodo is not None:
+            return nodo.busquedaB(dato)
+        else:
+            return "No existe"
