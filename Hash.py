@@ -38,7 +38,7 @@ class TablaHash:
 
     def funcionHash(self, dato):
         if isinstance(dato, list):
-            lenDato = int(dato[0])
+            lenDato = dato[self.pk[0]]
         else:
             lenDato = int(dato)
 
