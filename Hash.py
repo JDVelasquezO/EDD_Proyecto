@@ -10,8 +10,15 @@ class TablaHash:
         self.nCols = nCols
         self.genericId = 1
         self.sign = True
+        self.pk = 0
         for i in range (0, size):
             self.values.append(None)
+
+    def definePK(self, indices):
+        if len(indices) > 1:
+            pass
+        else:
+            self.pk = indices
 
     def setHeader(self, header):
         self.headers.append(header)
@@ -61,7 +68,7 @@ class TablaHash:
                 nuevo_dato.insert(dato)
                 self.values[posicion_hash] = nuevo_dato
         elif len(dato) < self.nCols:
-            node = self.values[self.genericId]
+            node = self.buscar(self.genericId)
             if node is None:
                 dato[0:0] = [self.genericId]
                 self.insertarDato(dato)
@@ -113,4 +120,4 @@ class TablaHash:
         if nodo is not None:
             return nodo.busquedaB(dato)
         else:
-            return "No existe"
+            return None

@@ -40,7 +40,7 @@ class Node:
                 final = mid -1 
             else:
                 inicio = mid +1
-        return "El dato no existe"
+        return None
 
     def quick_sorted(self, sequencia):
         lista = sequencia
