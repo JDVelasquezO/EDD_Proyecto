@@ -10,12 +10,13 @@ class TablaHash:
         self.nCols = nCols
         self.genericId = 1
         self.sign = True
-        self.pk = 0
+        self.pk = None
         for i in range (0, size):
             self.values.append(None)
 
     def definePK(self, indices):
         if len(indices) > 1:
+            self.pk = sum(indices, 0)
             pass
         else:
             self.pk = indices
@@ -52,41 +53,43 @@ class TablaHash:
         return contadorAux
 
     def insertarDato(self, dato):
+        if len(self.headers) == 0:
+            self.setHeader(dato)
+            return
         if len(dato) == self.nCols:
-            if len(self.headers) == 0:
-                self.setHeader(dato)
-                return
-            posicion_hash = int(self.funcionHash(dato))
-            bandera = self.verificarDato(dato, posicion_hash)
-            if self.values[posicion_hash] is not None:
-                if bandera:
-                    nuevo_dato = self.values[posicion_hash]
+            if self.pk != None:
+                posicion_hash = int(self.funcionHash(dato))
+                bandera = self.verificarDato(dato, posicion_hash)
+                if self.values[posicion_hash] is not None:
+                    if bandera:
+                        nuevo_dato = self.values[posicion_hash]
+                        nuevo_dato.insert(dato)
+                else:
+                    nuevo_dato = Node()
+                    nuevo_dato.post_in_hash = posicion_hash
                     nuevo_dato.insert(dato)
-            else:
-                nuevo_dato = Node()
-                nuevo_dato.post_in_hash = posicion_hash
-                nuevo_dato.insert(dato)
-                self.values[posicion_hash] = nuevo_dato
-        elif len(dato) < self.nCols:
+                    self.values[posicion_hash] = nuevo_dato
+        else:
             node = self.buscar(self.genericId)
             if node is None:
                 dato[0:0] = [self.genericId]
+                self.definePK([0])
                 self.insertarDato(dato)
             else:
                 self.genericId += 1
                 self.insertarDato(dato)
-        elif len(dato) == (self.nCols + 1):
-            if self.sign:
-                key1 = int(dato[0])
-                key2 = int(dato[1])
-                newKey = int(key1) + int(key2)
-                if self.buscar(newKey) == "El dato no existe":
-                    dato[0:0] = [newKey]
-                    self.insertarDato(dato)
-            else:
-                newKey += 1
-                self.sign = False
-                self.insertarDato(dato)
+        # elif len(dato) == (self.nCols + 1):
+        #     if self.sign:
+        #         key1 = int(dato[0])
+        #         key2 = int(dato[1])
+        #         newKey = int(key1) + int(key2)
+        #         if self.buscar(newKey) == "El dato no existe":
+        #             dato[0:0] = [newKey]
+        #             self.insertarDato(dato)
+        #     else:
+        #         newKey += 1
+        #         self.sign = False
+        #         self.insertarDato(dato)
 
     def verificarDato(self, dato, position):
         aux_bol = False

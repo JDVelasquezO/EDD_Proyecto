@@ -3,7 +3,7 @@ class Node:
     def __init__(self):
         self.array = []
         self.key = 0
-        
+
     #ya no se usa el de buscar porque ya esta implementado en la tabla hash
     def insert(self, dato):
         self.array.append(dato)
