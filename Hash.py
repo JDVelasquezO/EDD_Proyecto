@@ -16,7 +16,7 @@ class TablaHash:
 
     def definePK(self, indices):
         if len(indices) > 1:
-            self.pk = sum(indices, 0)
+            self.pk = indices
             pass
         else:
             self.pk = indices
@@ -39,10 +39,27 @@ class TablaHash:
 
     def funcionHash(self, dato):
         if isinstance(dato, list):
-            lenDato = dato[self.pk[0]]
+            lenDato = 0
+            if len(dato) > 1:
+                if len(self.pk) > 1:
+                    
+                    if self.sign:
+                        for i in self.pk:
+                            lenDato += dato[i]
+                        self.genericId = lenDato
+                    
+                    node = self.buscar(self.genericId)
+                    
+                    if node is None:
+                        dato[0:0] = [self.genericId]
+                    else:
+                        self.genericId += 1
+                        self.sign = False
+                        self.funcionHash(dato)
+                else:
+                    lenDato = dato[self.pk[0]]
         else:
             lenDato = int(dato)
-
         return int(lenDato % self.Size)
 
     def sizeTabla(self):
@@ -50,7 +67,7 @@ class TablaHash:
         for i in self.values:
             if i is not None:
                 contadorAux +=1
-        return contadorAux
+        return contadorAux   
 
     def insertarDato(self, dato):
         if len(self.headers) == 0:
@@ -69,6 +86,9 @@ class TablaHash:
                     nuevo_dato.post_in_hash = posicion_hash
                     nuevo_dato.insert(dato)
                     self.values[posicion_hash] = nuevo_dato
+            else:
+                self.nCols += 1
+                self.insertarDato(dato)
         else:
             node = self.buscar(self.genericId)
             if node is None:
@@ -78,18 +98,6 @@ class TablaHash:
             else:
                 self.genericId += 1
                 self.insertarDato(dato)
-        # elif len(dato) == (self.nCols + 1):
-        #     if self.sign:
-        #         key1 = int(dato[0])
-        #         key2 = int(dato[1])
-        #         newKey = int(key1) + int(key2)
-        #         if self.buscar(newKey) == "El dato no existe":
-        #             dato[0:0] = [newKey]
-        #             self.insertarDato(dato)
-        #     else:
-        #         newKey += 1
-        #         self.sign = False
-        #         self.insertarDato(dato)
 
     def verificarDato(self, dato, position):
         aux_bol = False
