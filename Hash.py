@@ -2,6 +2,7 @@ from Node import Node
 
 class TablaHash:
     def __init__(self, size, db, name, nCols):
+        self.id = 0
         self.Size = size-1
         self.values = list()
         self.headers = list()
@@ -14,12 +15,8 @@ class TablaHash:
         for i in range (0, size):
             self.values.append(None)
 
-    def definePK(self, indices):
-        if len(indices) > 1:
-            self.pk = indices
-            pass
-        else:
-            self.pk = indices
+    def alterAddPK(self, database, table, indices):
+        self.pk = indices
 
     def setHeader(self, header):
         self.headers.append(header)
@@ -42,14 +39,11 @@ class TablaHash:
             lenDato = 0
             if len(dato) > 1:
                 if len(self.pk) > 1:
-                    
                     if self.sign:
                         for i in self.pk:
                             lenDato += dato[i]
                         self.genericId = lenDato
-                    
                     node = self.buscar(self.genericId)
-                    
                     if node is None:
                         dato[0:0] = [self.genericId]
                     else:
@@ -69,12 +63,12 @@ class TablaHash:
                 contadorAux +=1
         return contadorAux   
 
-    def insertarDato(self, dato):
+    def insert(self, database, table, dato):
         if len(self.headers) == 0:
             self.setHeader(dato)
             return
         if len(dato) == self.nCols:
-            if self.pk != None:
+            if self.pk:
                 posicion_hash = int(self.funcionHash(dato))
                 bandera = self.verificarDato(dato, posicion_hash)
                 if self.values[posicion_hash] is not None:
@@ -88,16 +82,16 @@ class TablaHash:
                     self.values[posicion_hash] = nuevo_dato
             else:
                 self.nCols += 1
-                self.insertarDato(dato)
+                self.insert(database, table, dato)
         else:
             node = self.buscar(self.genericId)
             if node is None:
                 dato[0:0] = [self.genericId]
-                self.definePK([0])
-                self.insertarDato(dato)
+                self.alterAddPK(database, table, [0])
+                self.insert(database, table, dato)
             else:
                 self.genericId += 1
-                self.insertarDato(dato)
+                self.insert(database, table, dato)
 
     def verificarDato(self, dato, position):
         aux_bol = False

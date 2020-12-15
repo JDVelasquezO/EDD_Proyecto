@@ -26,7 +26,6 @@ class Node:
                 lb = med +1
             elif int(arreglo[0]) > int(dato[0]):
                 ub = med -1
-    
         return False
 
     def busquedaB(self, dato):
