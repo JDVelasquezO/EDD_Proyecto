@@ -1,11 +1,10 @@
 class Node:
-    
+
     def __init__(self):
         self.array = []
         self.key = 0
         self.pk = None
 
-    #ya no se usa el de buscar porque ya esta implementado en la tabla hash
     def insert(self, dato):
         self.array.append(dato)
         lista = self.array.copy()
@@ -27,19 +26,6 @@ class Node:
             elif int(arreglo[0]) > int(dato[0]):
                 ub = med -1
         return False
-    # def buscarDato_binary(self, dato):
-    #     ub = len(self.array) 
-    #     lb = 0 
-    #     while (lb <= ub-1):
-    #         med = (ub + lb ) // 2
-    #         arreglo = self.array[med]
-    #         if int(arreglo[0]) == int(dato[0]):
-    #             return True
-    #         elif int(arreglo[0]) < int(dato[0]):
-    #             lb = med +1
-    #         elif int(arreglo[0]) > int(dato[0]):
-    #             ub = med -1
-    #     return False
 
     def busquedaB(self, dato):
         inicio = 0
@@ -73,14 +59,47 @@ class Node:
         return self.quick_sorted(elementos_menores) + elemento_medio + self.quick_sorted(elementos_mayores)
 
     def eliminar(self, dato):
-        if not self.buscarDato(dato):
-            self.array.remove(dato)
-            self.quick_sorted(self.array)
+        if self.Eliminar_porbusqueda(dato):
+            lista = self.array[:]
+            lista_ordenada= self.quick_sorted(lista)
+            self.array.clear()
+            self.array = lista_ordenada[:]
             if len(self.array) == 0:
                 return 0
             else:
                 return True
         else:
             return False
-    def printArray(self):
-        print(self.array)
+
+    def modificar(self, columna, modificacion, key):
+        try:
+            inicio = 0
+            final = len(self.array) -1 
+            while inicio <= final:
+                mid = inicio + (final - inicio) //2
+                arreglo = self.array[mid]
+                if int(arreglo[0]) == int(key):
+                    self.array[mid][columna] = modificacion
+                    return 0
+                elif int(key) < int(arreglo[0]):
+                    final = mid -1 
+                else:
+                    inicio = mid +1
+            return 4
+        except :
+            return 1
+
+    def Eliminar_porbusqueda(self, dato):
+        inicio = 0
+        final = len(self.array) -1 
+        while inicio <= final:
+            mid = inicio + (final - inicio) //2
+            arreglo = self.array[mid]
+            if int(arreglo[0]) == int(dato):
+                self.array.pop(mid)
+                return True
+            elif int(dato) < int(arreglo[0]):
+                final = mid -1 
+            else:
+                inicio = mid +1
+        return None
