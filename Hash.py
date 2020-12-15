@@ -4,7 +4,6 @@ class TablaHash:
     def __init__(self, size, db, name, nCols):
         self.id = 0
         self.Size = size-1
-        self.values = list()
         self.headers = list()
         self.db = db
         self.name = name
@@ -12,8 +11,7 @@ class TablaHash:
         self.genericId = 1
         self.sign = True
         self.pk = None
-        for i in range (0, size):
-            self.values.append(None)
+        self.values = [None]*self.Size
 
     def alterAddPK(self, database, table, indices):
         self.pk = indices
@@ -64,6 +62,7 @@ class TablaHash:
         return contadorAux   
 
     def insert(self, database, table, dato):
+        self.rehashing()
         if len(self.headers) == 0:
             self.setHeader(dato)
             return
@@ -93,6 +92,28 @@ class TablaHash:
                 self.genericId += 1
                 self.insert(database, table, dato)
 
+    def ElementosEn_tbl(self):
+        auxiliar = 0 
+        for nodo in self.values:
+            if nodo is not None:
+                auxiliar +=1
+        return auxiliar
+
+    def rehashing(self):
+        actualSize = self.ElementosEn_tbl()
+        factorAgregado = int(self.Size * 0.75)
+        if actualSize >= factorAgregado:
+            #estoy_en_rehashing = True
+            self.setSize( int(self.Size*3.75))
+            arrayAuxiliar = self.values[:]
+            self.values.clear()
+            self.values = [None]*self.Size
+            lista = [tupla for nodo in arrayAuxiliar if nodo is not None for tupla in nodo.array]
+            for j in lista:
+                self.insert("", "", j)
+            arrayAuxiliar.clear()
+            print("El rehashing fue realizado con exito")
+
     def verificarDato(self, dato, position):
         aux_bol = False
         if self.values[position] is not None:
@@ -112,12 +133,13 @@ class TablaHash:
             print("dato no eliminado")
 
     def printTbl(self):
-        contador = 0
-        print(f"i | {self.headers}")
-        for i in range(0,self.Size+1):
-            if self.values[i] != None:
-                print(str(self.values[i].post_in_hash) + " | " + str(self.values[i].array))
-            contador +=1
+        if self.values:
+            print(f"i | {self.headers}")
+            for i in self.values:
+                if i :
+                    print(str(i.post_in_hash) + " | " + str(i.array))
+        else:
+            print("vacio")
 
     def buscar(self, dato):
         posicion_hash = self.funcionHash(dato)

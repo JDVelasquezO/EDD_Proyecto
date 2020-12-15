@@ -17,7 +17,7 @@ class Node:
     def buscarDato_binary(self, dato):
         ub = len(self.array) 
         lb = 0 
-        while (lb <= ub-1):
+        while lb <= ub-1:
             med = (ub + lb ) // 2
             arreglo = self.array[med]
             if int(arreglo[0]) == int(dato[0]):
@@ -27,6 +27,19 @@ class Node:
             elif int(arreglo[0]) > int(dato[0]):
                 ub = med -1
         return False
+    # def buscarDato_binary(self, dato):
+    #     ub = len(self.array) 
+    #     lb = 0 
+    #     while (lb <= ub-1):
+    #         med = (ub + lb ) // 2
+    #         arreglo = self.array[med]
+    #         if int(arreglo[0]) == int(dato[0]):
+    #             return True
+    #         elif int(arreglo[0]) < int(dato[0]):
+    #             lb = med +1
+    #         elif int(arreglo[0]) > int(dato[0]):
+    #             ub = med -1
+    #     return False
 
     def busquedaB(self, dato):
         inicio = 0
