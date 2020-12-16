@@ -1,3 +1,3 @@
-# Grupo 10
+# Universidad de San Carlos de Guatemala
 
-## HOla
+## Manual Técnico 
