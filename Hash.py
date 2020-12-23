@@ -1,10 +1,11 @@
 from Node import Node
+from Node import Node
 from graphviz import Digraph
 
 class TablaHash:
     def __init__(self, size, name, nCols):
         self.id = 0
-        self.Size = size
+        self.Size = size-1
         self.name = name
         self.contadorNodo = 0
         self.nCols = nCols
@@ -34,18 +35,14 @@ class TablaHash:
 
     def alterAddPK(self, indices):
         for i in indices:
-            try:
-                int(i)
-            except:
-                return 1
-
             if i not in range(0, self.nCols):
                 return 5
 
         if len(indices) <= self.nCols:
             if not self.pk:
-                return self.recalculateKey(self.pk, indices)
-                # return 0
+                self.pk = indices
+                self.recalculateKey(self.pk)
+                return 0
             else:
                 # print("No se puede poner otra PK")
                 return 4
@@ -92,7 +89,7 @@ class TablaHash:
             if bandera:
                 nuevo_dato = self.values[posicion_hash]
                 nuevo_dato.insert(dato, key)
-                # self.contadorNodo +=1 
+                self.contadorNodo +=1
                 return 0
             else:
                 return 4
@@ -133,32 +130,17 @@ class TablaHash:
         else:
             return 1
 
-    def recalculateKey(self, newPk, indices):
-        listCol = []
-        data = []
-        ids = []
-        for node in self.values:
-            if node is not None:
-                for n in node.array:
-                    d = n[1]
-                    data.append(d)
-                    key = ""
-                    # ids = n[1][0]
-                    # for i in n[1]:
-                    for j in indices:
-                        ids = n[1][j]
-                        key += str(ids)
-                    listCol.append(key)
-                    if listCol.count(key) > 1:
-                        return 1
-                    else:
-                        continue
-        # lista = self.values.copy()
+    def recalculateKey(self, newPk):
+        lista = self.values.copy()
         self.values.clear()
         self.values = [None]*self.Size
-        self.pk = indices
-        for d in data:
-            self.insert(d)
+
+        data = []
+        for node in lista:
+            if node is not None:
+                for n in node.array:
+                    data = n[1]
+                    self.insert("table1", data)
 
     def truncate(self): 
         try:
@@ -202,7 +184,7 @@ class TablaHash:
             self.values = [None]*self.Size
             lista = [tupla for nodo in arrayAuxiliar if nodo is not None for tupla in nodo.array]
             for j in lista:
-                self.insert(j[1])
+                self.insert( j[1])
             arrayAuxiliar.clear()
             self.inrehashing = False
             
@@ -250,10 +232,10 @@ class TablaHash:
             for i in self.values:
                 if i :
                     new = str(i.key) + " | " + str(i.array).replace('[','')
-                    new2 = new.replace(']','')+"=============="
+                    new2 = new.replace(']','')
                     listTbl.append(new2)            
         else:
-            print("vacio")  
+            print("vacio")        
         return listTbl
 
     def imp1(self,columnNumber,lower,upper): ##Modificando este metodo
@@ -274,14 +256,10 @@ class TablaHash:
 
     # agrega la nueva columna y asigna el valor
     def alterAddColumn(self, dato):
-        if dato == []:
-            return 1
-        else:
-            self.nCols += 1
-            for i in self.values:
-                    if i :
-                        i.alterAddColumn(dato)
-            return 0
+        self.nCols += 1
+        for i in self.values:
+                if i :
+                    i.alterAddColumn(dato)
 
     #19/12/2020
     def getNumeroColumnas(self):
@@ -290,10 +268,9 @@ class TablaHash:
     def alterDropColumn(self, columnNumber):
         if columnNumber in range(0, self.nCols):
             if columnNumber <= self.nCols:
-                if self.pk:
-                    for key in self.pk:
-                        if columnNumber == key:
-                            return 4
+                for key in self.pk:
+                    if columnNumber == key:
+                        return 4
                 pass
                 for i in self.values:
                     if i:
@@ -302,29 +279,23 @@ class TablaHash:
                     pass
                 pass
                 newKeys = []
-                if self.pk:
-                    for key in self.pk:
-                        if (key > columnNumber) and (key != 0):
-                            key -= 1
-                        newKeys.append(key)
+                for key in self.pk:
+                    if (key > columnNumber) and (key != 0):
+                        key -= 1
+                    newKeys.append(key)
                 self.nCols -= 1
                 self.pk = None
                 self.alterAddPK(newKeys)
-                return 0
             else:
                 return 4
         else:
             return 5
 
     def alterDropPK(self):
-        if not self.pk:
-            return 4
-        else:
-            self.pk = None
-            for i in self.values:
-                if i:
-                    i.isGeneric = True
-            return 0
+        self.pk = None
+        for i in self.values:
+            if i:
+                i.isGeneric = True
 
     def genGraph(self, name):
         f = Digraph("structs" , filename = name+".gv" , format = "png",
@@ -363,3 +334,4 @@ class TablaHash:
                         m+=1 
                 n+=1
         f.view()
+    
