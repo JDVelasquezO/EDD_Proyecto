@@ -40,7 +40,7 @@ class Node:
                 final = mid -1 
             else:
                 inicio = mid +1
-        return []
+        return None
 
     def quick_sorted(self, sequencia):
         lista = sequencia
@@ -142,18 +142,10 @@ class Node:
         else:
             return None
 
-    def NumbervalidationFloat(self,columnNumber,valor,lower,upper):       
-        if float(valor[columnNumber]) <= upper and float(valor[columnNumber]) >= lower :
-                return valor
-        else:
-            return None        
-
     def imp_column(self,subnodo,columnNumber,lower,upper): 
-        if isinstance(lower, int) == True:       ##para enteros
-            return self.Numbervalidation(columnNumber,subnodo,lower,upper)  
-        elif isinstance(lower, float) == True:       ##para float
-            return self.NumbervalidationFloat(columnNumber,subnodo,lower,upper)  
-        else:                                       ##para string
+        if isinstance(lower, int) == True:       
+            return self.Numbervalidation(columnNumber,subnodo,lower,upper)      
+        else:
             if self.obtenerLower(columnNumber,subnodo,lower) == True and self.obtenerUpper(columnNumber,subnodo,upper) == True: ##
                 return subnodo
             else:
@@ -163,9 +155,6 @@ class Node:
         if isinstance(lower, int) == True:
             for i in self.array:     
                 return self.Numbervalidation(columnNumber,i[1],lower,upper)      
-        elif isinstance(lower, float) == True:       ##para float
-            for i in self.array:     
-                return self.NumbervalidationFloat(columnNumber,i[1],lower,upper)          
         else:
             for i in self.array:
                 if self.obtenerLower(columnNumber,i[1],lower) == True and self.obtenerUpper(columnNumber,i[1],upper) == True:
@@ -184,3 +173,4 @@ class Node:
             print("en el nodo")
             print(e)
             print("########")
+
